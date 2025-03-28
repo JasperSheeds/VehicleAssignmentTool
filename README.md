@@ -1,12 +1,13 @@
+# Read Me
 A tool to update Vehicle Assignments on Cityworks and Calamp. Also sends out unassigned employees, issues found in daily vehicle inspections, and vehicles that operated outside of business hours.
 
-SQL queries, keys, and account numbers removed for security purposes. 
+*SQL queries, keys, and account numbers removed for security purposes.*
 
 To run, daily and undaily tasks should be called in a scheduler. Daily should be triggered once a day before undaily. Undaily should be triggered multiple times on a regular basis; for example once every fifteen minutes.
 
 Operating hours, reset hours, days run can be updated for the files. Look for information within the files to find more information on what to change. 
 
-###A list of what is inside the .env file:
+### A list of what is inside the .env file:
 -APPKEY = Calamp application key
 -USERINFO = username=CALAMPUSERNAME&password=CALAMPPASSWORD
 -cw_username=Cityworks Username
