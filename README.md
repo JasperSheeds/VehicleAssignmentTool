@@ -28,4 +28,4 @@ Operating hours, reset hours, days run can be updated for the files. Look for in
 - daily_unassigned_sql= SQL Query that grabs Employee ID, Employee Name, Employee Workgroup Filtered by employees without vehicle assigned to them
 
 
-For assistance writing SQL queries for the program visit [BeamAndStream](beamandstream.com) for a quote.
+For assistance writing SQL queries for the program visit [BeamAndStream](https://www.beamandstream.com/) for a quote.
