@@ -1,8 +1,9 @@
 """ Housekeeping functions used in other files.
- Changes last made by Jasper Sheeds 3/28/25 """
+ Changes last made by Jasper Sheeds 3/31/25 """
 
 import json
 import smtplib
+import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pyodbc
@@ -15,8 +16,14 @@ error_log_file = []
 
 def cw_connections():
     """ Creates and returns a Cityworks connection. """
-    connection = pyodbc.connect(os.getenv('cw_connection'))
-    return connection.cursor()
+    try:
+        connection = pyodbc.connect(os.getenv('cw_connection'))
+        return connection.cursor()
+    except:
+        error_log("Error: Unable to connect to CW")
+        final_error = ''.join(str(x) for x in get_errors())
+        email_send(final_error, final_error, "Vehicle Function Error")
+        sys.exit()
 
 def folder_loc(path):
     """ Checks if folder exists, and creates it if it does not."""
@@ -74,5 +81,3 @@ def return_token():
             return 0
     except:
         return 0
-
-print(return_token())

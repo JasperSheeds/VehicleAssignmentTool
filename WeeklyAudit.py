@@ -10,7 +10,7 @@ Change wd_start_hour and wd_start_min to alter start of workday.
 Change wd_end_hour and wd_end_min to alter end of workday.
 (Time is in 24-hour format)
 
-  Last updated by Jasper Sheeds 3/28/25"""
+  Last updated by Jasper Sheeds 3/31/25"""
 
 wd_start_hour = 7
 wd_start_min = 0
@@ -43,7 +43,6 @@ location_plain = []
 holidays = os.getenv("holidays")
 iso_time = timedelta(hours=5)
 est_time = timezone(timedelta(hours=-5))
-account_id = os.getenv("account")
 
 def get_week(date):
     """ Calculates a seven-day week that ends the day before the current date. """
@@ -54,7 +53,7 @@ def get_week(date):
 
 def get_devices(date):
     """ Gets all the devices in the account. Returns a list. """
-    url = baseurl + "accounts/" + str(account_id) + "/subaccounts/devices"
+    url = baseurl + "accounts/" + str(cal_account) + "/subaccounts/devices"
     headers = {
         "accept": "application/json;charset=UTF-8",
         "calamp-services-app": appkey,

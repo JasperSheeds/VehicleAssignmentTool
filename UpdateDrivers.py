@@ -1,5 +1,5 @@
 """This program uses Calamp API and Cityworks to gather driver assignments based on pretrip inspections done and then assigns them in Calamp.
- Last updated by Jasper Sheeds 3/28/25"""
+ Last updated by Jasper Sheeds 3/31/25"""
 
 import json
 from jsonpath_ng.ext import parse
@@ -11,7 +11,7 @@ from SupportFunctions import cw_connections, error_log, email_send
 
 load_dotenv()
 appkey = os.getenv("APPKEY")
-account = os.getenv("account")
+account = os.getenv("cal_account")
 baseurl = os.getenv("base_url_calamp")
 new_vehicle_file = []
 new_vehicle_plain = []
@@ -22,27 +22,31 @@ def get_pairs(currentList):
     """ This function uses Cityworks to establish a list of vehicles and the drivers currently assigned to them from pre-trip inspections. """
     global cursor
     cursor = cw_connections()
-    cursor.execute(os.getenv("get_pairs_sql"))
-    try:
-        current_assigned = [str(match.value) for match in currentList]
-    except:
-        current_assigned = []
-    for row in cursor:
+    if cursor != 0:
+        cursor.execute(os.getenv("get_pairs_sql"))
         try:
-            driver = str(get_driver_id(str(row[1])))
-            asset = str(get_asset_id(str(row[0])))
-
-            if asset == "0":
-                new_vehicle_file.append(str(row[0]) + "<br>")
-                new_vehicle_plain.append(str(row[0]) + "\n")
-            elif asset != "1" and asset not in current_assigned:
-                assign_driver(driver, asset)
+            current_assigned = [str(match.value) for match in currentList]
         except:
-            error_log("There was an issue getting id from the driver: " + str(row[1]) + " or from the asset: " + str(row[0]) + ",\n")
-    if len(new_vehicle_file) > 0:
-        final_new = "<h2>Vehicle(s) not found in Calamp</h2><ul><p>" + ''.join(str(x) for x in new_vehicle_file)
-        final_plain = "Vehicles(s) not found in Calamp\n"
-        email_send(final_new, final_plain, "Vehicles Not Found")
+            current_assigned = []
+        for row in cursor:
+            try:
+                driver = str(get_driver_id(str(row[1])))
+                asset = str(get_asset_id(str(row[0])))
+
+                if asset == "0":
+                    new_vehicle_file.append(str(row[0]) + "<br>")
+                    new_vehicle_plain.append(str(row[0]) + "\n")
+                elif asset != "1" and asset not in current_assigned:
+                    assign_driver(driver, asset)
+            except:
+                error_log(
+                    "There was an issue getting id from the driver: " + str(row[1]) + " or from the asset: " + str(
+                        row[0]) + ",\n")
+        if len(new_vehicle_file) > 0:
+            final_new = "<h2>Vehicle(s) not found in Calamp</h2><ul><p>" + ''.join(str(x) for x in new_vehicle_file)
+            final_plain = "Vehicles(s) not found in Calamp\n"
+            email_send(final_new, final_plain, "Vehicles Not Found")
+
 
 def get_driver_id(cwid):
     """ Uses EmployeeID to find the Employees Calamp ID. Creates employee if one is not found. """
@@ -139,7 +143,7 @@ def remove_operators(assets):
 
 def create_driver(driver):
     """ Uses information from Cityworks to create a driver in Calamp. """
-    cursor.execute(os.getenv("create_driver_sql"))
+    cursor.execute(os.getenv("create_driver_sql_1") + driver + os.getenv("create_driver_sql_2"))
     values = cursor.fetchall()[0]
     try:
         url = baseurl + "operators"
